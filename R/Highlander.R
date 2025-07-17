@@ -267,7 +267,14 @@ Highlander=function(parm=NULL, Data, likefunc, likefunctype=NULL, liketype=NULL,
     parm_out[parm_out > Data[['intervals']]$hi] = Data[['intervals']]$hi[parm_out > Data[['intervals']]$hi]
   }
 
-  RedChi2 = LP_out/(-1.418939 * DataLD[['N']])
+  output = ProSpectSEDlike(parm=parm_out, Data=Data)
+  bestflux = output$Monitor
+  bestflux = bestflux[grep("^flux\\.", names(bestflux))]
+  chi = sum(((Data$flux$flux - bestflux)/Data$flux$fluxerr)**2, na.rm=TRUE)
+  redchi = chi/(sum(!is.na(unlist(Data$flux$flux))) - sum(!is.na(unlist(parm))))
+  RedChi2 = redchi
+  
+  #RedChi2 = LP_out/(-1.418939 * DataLD[['N']])
 
   if(!is.null(parm.names)){
     names(parm_out) = parm.names
